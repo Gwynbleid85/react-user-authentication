@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import Callback from "./components/Callback";
-import authConfig from "./authConfig";
+import { authConfig } from "./authConfig";
 import { UserManager, WebStorageStateStore } from "oidc-client-ts";
 
 function App() {
