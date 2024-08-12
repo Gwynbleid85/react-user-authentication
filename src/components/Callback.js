@@ -47,7 +47,7 @@ const Callback = ({
 
   const testAuth = () => {
     setAuthorized("Loading...");
-    fetch("http://localhost:5063/test/authorize", {
+    fetch("http://localhost:5019/test/authorize", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -67,7 +67,7 @@ const Callback = ({
   };
   const testAuthJWT = () => {
     setAuthorizedJWT("Loading...");
-    fetch("http://localhost:5063/test/authorize/jwt", {
+    fetch("http://localhost:5019/test/authorize/jwt", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -97,6 +97,7 @@ const Callback = ({
         <h3>Locale: {userInfo.locale}</h3>
         <h2>Authorized basic: {authorized}</h2>
         <h2>Authorized JWT: {authorizedJWT}</h2>
+        <h3>Scopes: {authConfig.scope}</h3>
 
         <button onClick={handleLogout}>Log out</button>
         <button
