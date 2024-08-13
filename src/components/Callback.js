@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { authConfig } from "../authConfig";
+import { redirect } from "react-router-dom";
 
 const Callback = ({
   auth,
@@ -10,6 +11,7 @@ const Callback = ({
   handleLogout,
 }) => {
   const [accessToken, setAccessToken] = useState("");
+  const [info, setInfo] = useState("");
 
   useEffect(() => {
     if (auth === null) {
@@ -17,7 +19,6 @@ const Callback = ({
         .signinRedirectCallback()
         .then((user) => {
           if (user) {
-            console.log(user);
             setAccessToken(user.access_token);
             setAuth(true);
             const access_token = user.access_token;
@@ -29,92 +30,75 @@ const Callback = ({
             })
               .then((response) => response.json())
               .then((userInfo) => {
-                console.log(userInfo);
                 setUserInfo(userInfo);
+                console.log(userInfo);
               });
           } else {
             setAuth(false);
+            console.log("user not in response");
           }
         })
         .catch((error) => {
           setAuth(false);
+          localStorage.clear();
+          window.location.replace(authConfig.post_logout_redirect_uri);
+          console.log("Login failed");
         });
     }
   }, [auth, userManager, setAuth]);
 
-  const [authorized, setAuthorized] = useState("");
-  const [authorizedJWT, setAuthorizedJWT] = useState("");
-
-  const testAuth = () => {
-    setAuthorized("Loading...");
-    fetch("http://localhost:5019/test/authorize", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((response) => {
-        console.log(response);
-        if (response.status === 200) {
-          setAuthorized("YES");
-        } else {
-          setAuthorized("NO");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setAuthorized("NO");
-      });
-  };
   const testAuthJWT = () => {
-    setAuthorizedJWT("Loading...");
+    setInfo("Loading...");
     fetch("http://localhost:5019/test/authorize/jwt", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
       .then((response) => {
-        console.log(response);
         if (response.status === 200) {
-          setAuthorizedJWT("YES");
+          setInfo("JWT authorization sucessfull!");
         } else {
-          setAuthorizedJWT("NO");
+          setInfo("JWT authorization FAILED!");
         }
       })
       .catch((error) => {
-        console.log(error);
-        setAuthorizedJWT("NO");
+        setInfo("JWT authorization FAILED!");
       });
+  };
+
+  const copyTokenToClipboard = () => {
+    navigator.clipboard.writeText(accessToken);
+    setInfo("Text coppied to clipboard!");
   };
 
   if (auth === true && userInfo) {
     return (
-      <div>
-        <h1>Welcome, {userInfo.name}!</h1>
-        <h2>Your ZITADEL Profile Information</h2>
-        <h3>Name: {userInfo.name}</h3>
-        <h3>Email: {userInfo.email}</h3>
-        <h3>Email Verified: {userInfo.email_verified ? "Yes" : "No"}</h3>
-        <h3>Locale: {userInfo.locale}</h3>
-        <h2>Authorized basic: {authorized}</h2>
-        <h2>Authorized JWT: {authorizedJWT}</h2>
-        <h3>Scopes: {authConfig.scope}</h3>
+      <div className="main_wrapper">
+        <div className="main_tile">
+          <h1>Welcome, {userInfo.name}!</h1>
 
-        <button onClick={handleLogout}>Log out</button>
-        <button
-          onClick={() => {
-            testAuth();
-          }}
-        >
-          Test auth basic
-        </button>
+          <span>Click to copy access token!</span>
+          <div
+            className="access_token_container"
+            onClick={copyTokenToClipboard}
+          >
+            <pre>{accessToken}</pre>
+          </div>
+          <h4>{info}</h4>
 
-        <button
-          onClick={() => {
-            testAuthJWT();
-          }}
-        >
-          Test auth JWT
-        </button>
+          <button className="mainButton" onClick={handleLogout}>
+            Log out
+          </button>
+
+          <button
+            className="mainButton"
+            onClick={() => {
+              testAuthJWT();
+            }}
+          >
+            Test auth JWT
+          </button>
+        </div>
       </div>
     );
   } else {
