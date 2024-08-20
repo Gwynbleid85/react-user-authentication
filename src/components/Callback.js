@@ -76,7 +76,6 @@ const Callback = ({
       <div className="main_wrapper">
         <div className="main_tile">
           <h1>Welcome, {userInfo.name}!</h1>
-
           <span>Click to copy access token!</span>
           <div
             className="access_token_container"
@@ -85,11 +84,9 @@ const Callback = ({
             <pre>{accessToken}</pre>
           </div>
           <h4>{info}</h4>
-
           <button className="mainButton" onClick={handleLogout}>
             Log out
           </button>
-
           <button
             className="mainButton"
             onClick={() => {
@@ -98,6 +95,11 @@ const Callback = ({
           >
             Test auth JWT
           </button>
+          <br />
+          <div className="debug_tile">
+            <b> Bebug info: </b>
+            <pre>{JSON.stringify(userInfo, null, 2)}</pre>
+          </div>
         </div>
       </div>
     );
